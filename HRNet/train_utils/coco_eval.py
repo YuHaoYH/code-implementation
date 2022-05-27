@@ -9,6 +9,7 @@ from .distributed_utils import all_gather, is_main_process
 from transforms import affine_points
 
 
+
 def merge(img_ids, eval_results):
     """将多个进程之间的数据汇总在一起"""
     all_img_ids = all_gather(img_ids)
