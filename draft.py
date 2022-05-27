@@ -1,7 +1,6 @@
 import torch
 from torch import nn
 
-# import torch.nn as nn
 
 x = torch.Tensor(3, 6, 3, 3)
 print(x)
