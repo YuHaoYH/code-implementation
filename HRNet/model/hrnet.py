@@ -3,6 +3,11 @@ import torch.nn as nn
 BN_MOMENTUM = 0.1
 
 
+# def conv3x3(in_planes, out_planes, stride=1):
+#     """3x3 convolution with padding"""
+#     return nn.Conv2d(in_planes, out_planes, stride=stride, kernel_size=3,padding=1,bias=False)
+
+
 class BasicBlock(nn.Module):
     expansion = 1
 
@@ -40,6 +45,11 @@ class Bottleneck(nn.Module):
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
         super(Bottleneck, self).__init__()
+        """使用1x1卷积先降维，再使用3x3卷积进行特征提取，最后再使用1x1卷积把维度升回去
+        每个卷积块后面连接BN层进行归一化残差连接前的1x1卷积之后只接入BN，不使用ReLU，避免加和之后的特征皆为正，保持特征的多样性。
+        跳层连接：两种情况，当模块输入和残差支路（1x1->3x3->1x1）的通道数一致时，直接相加；
+        当两者通道不一致时（一般发生在分辨率降低之后，同分辨率一般通道数一致），需要对模块输入特征使用1x1卷积进行升/降维（步长为2)，之后同样接BN，不用ReLU。
+        """
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes, momentum=BN_MOMENTUM)
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride,
